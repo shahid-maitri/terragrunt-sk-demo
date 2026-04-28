@@ -8,6 +8,7 @@ locals {
   environment = local.environment_vars.locals.environment
   aws_region  = local.region_vars.locals.aws_region
   app         = local.app_vars.locals.app_name
+ 
 
   # Optional but recommended (define in env.hcl later)
   account_id = try(local.environment_vars.locals.aws_account_id, "")
@@ -24,8 +25,8 @@ locals {
   # Provider versions
   provider_aws_version = "~> 5.0"
   
-  # NEW: Detect if we're in bootstrap
-  is_bootstrap = contains(get_terragrunt_dir(), "remote-state")
+  # # NEW: Detect if we're in bootstrap
+  # is_bootstrap         = strcontains(get_terragrunt_dir(), "remote-state")
 }
 
 # =========================
@@ -75,50 +76,31 @@ EOF
 # =========================
 # Remote State (S3 + DynamoDB)
 # =========================
-# remote_state {
-#   backend = "s3"
+remote_state {
+  backend = "s3"
 
-#   config = {
-#     encrypt        = true
-#     bucket         = local.backend_bucket_name
-#     key            = "${path_relative_to_include()}/terraform.tfstate"
-#     region         = local.aws_region
-#     profile        = local.state_file_profile
-#     dynamodb_table = local.backend_dynamodb_table
-#   }
+  config = {
+    encrypt        = true
+    bucket         = local.backend_bucket_name
+    key            = "${path_relative_to_include()}/terraform.tfstate"
+    region         = local.aws_region
+    profile        = local.state_file_profile
+    dynamodb_table = local.backend_dynamodb_table
+  }
 
-#   generate = {
-#     path      = "backend.tf"
-#     if_exists = "overwrite_terragrunt"
-#   }
-# }
-
-# Only configure remote_state for non-bootstrap modules
-# this means that creating the remote state bucket and DynamoDB table will be done with local state, then all other modules will use remote state once the backend is created
-dynamic "remote_state" {
-  for_each = local.is_bootstrap ? [] : [1]
-  content {
-    backend = "s3"
-    config = {
-      encrypt        = true
-      bucket         = local.backend_bucket_name
-      key            = "${path_relative_to_include()}/terraform.tfstate"
-      region         = local.aws_region
-      profile        = local.state_file_profile
-      dynamodb_table = local.backend_dynamodb_table
-    }
-    generate = {
-      path      = "backend.tf"
-      if_exists = "overwrite_terragrunt"
-    }
+  generate = {
+    path      = "backend.tf"
+    if_exists = "overwrite_terragrunt"
   }
 }
+
+
 
 # =========================
 # Shared Inputs (DRY)
 # =========================
 inputs = merge(
   local.environment_vars.locals,
-  local.region_vars.locals,
-  local.app_vars.locals
+  local.region_vars != null ? local.region_vars.locals : {},
+  local.app_vars != null ? local.app_vars.locals : {}
 )
