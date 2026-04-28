@@ -23,6 +23,12 @@ terraform {
   source = "../../modules/remote-state"
 }
 
+# Exclude from run-all commands
+exclude {
+  if      = true
+  actions = ["run-all"]
+}
+
 inputs = {
   environment = "prod"
   aws_region  = "us-east-1"

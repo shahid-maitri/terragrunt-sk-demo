@@ -8,7 +8,7 @@ include "ec2_common" {
   expose = true
 }
 
-inputs{
+inputs = {
   # EC2 config for dev
   instance_name = "operation"
   instance_type = "t3a.micro"
