@@ -16,7 +16,7 @@ locals {
 
   # Backend naming (clean + consistent)
   backend_bucket_name  = "${local.app}-${local.environment}-${local.aws_region}-tf-state-bucket"
-  backend_dynamodb_table = "${local.app}-${local.environment}-tf-lock-table"
+  #backend_dynamodb_table = "${local.app}-${local.environment}-tf-lock-table"
 
   # Infra account profile (for remote state)
   infra_profile = "karim"
@@ -85,7 +85,8 @@ remote_state {
     key            = "${path_relative_to_include()}/terraform.tfstate"
     region         = local.aws_region
     profile        = local.state_file_profile
-    dynamodb_table = local.backend_dynamodb_table
+    #dynamodb_table = local.backend_dynamodb_table
+    use_lockfile = true  # ✅ Native S3 locking — no DynamoDB!
   }
 
   generate = {

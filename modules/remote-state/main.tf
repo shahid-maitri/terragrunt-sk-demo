@@ -66,19 +66,21 @@ module "state_bucket" {
 # DynamoDB Table for State Locking
 ################################################################################
 
-resource "aws_dynamodb_table" "terraform_locks" {
-  name           = "${var.app}-${var.environment}-tf-lock-table"
-  billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "LockID"
+# use_lockfile = true in terraform block will create a .terraform.tfstate.lock.info file in the current directory when a terraform command is running. This file is used to prevent multiple terraform commands from running at the same time and causing conflicts with the state file. The lock file will be automatically removed when the terraform command finishes.
 
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
+# resource "aws_dynamodb_table" "terraform_locks" {
+#   name           = "${var.app}-${var.environment}-tf-lock-table"
+#   billing_mode   = "PAY_PER_REQUEST"
+#   hash_key       = "LockID"
 
-  tags = {
-    Name        = "tf-lock-table-${var.environment}"
-    Environment = var.environment
-    ManagedBy   = "terraform"
-  }
-}
+#   attribute {
+#     name = "LockID"
+#     type = "S"
+#   }
+
+#   tags = {
+#     Name        = "tf-lock-table-${var.environment}"
+#     Environment = var.environment
+#     ManagedBy   = "terraform"
+#   }
+# }
