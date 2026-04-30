@@ -6,6 +6,7 @@ include "ec2_common" {
   # path   = "${get_repo_root()}/_envcommon/ec2.hcl"
   path = find_in_parent_folders("_envcommon/ec2.hcl")
   expose = true
+  merge_strategy = "deep"
 }
 
 inputs = {

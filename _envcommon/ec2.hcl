@@ -22,7 +22,7 @@ dependency "vpc" {
     vpc_cidr_block = "10.0.0.0/16"
     public_subnets = ["subnet-00000000"]
   }
-  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
+  mock_outputs_allowed_terraform_commands = ["validate", "plan", "init"]
 }
 
 inputs = {
